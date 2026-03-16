@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven3'
+        jdk 'JDK21'
+    }
+
+    environment {
+        IMAGE_NAME = "splunk-crud-app"
+    }
+
+    stages {
+
+        stage('Clone Repository & Build') {
+            steps {
+                checkout scm
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Package Application') {
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+
+        stage('Stop Old Container') {
+            steps {
+                sh 'docker stop splunk-app || true'
+                sh 'docker rm splunk-app || true'
+            }
+        }
+
+        stage('Remove Old Image') {
+            steps {
+                sh 'docker rmi $IMAGE_NAME || true'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME -f src/main/java/com/example/splunk/Dockerfile .'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh """
+                docker run -d \
+                --name splunk-app \
+                -p 8081:8080 \
+                -e SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL \
+                -e SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD \
+                $IMAGE_NAME
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CI/CD Pipeline Completed Successfully'
+        }
+        failure {
+            echo 'Pipeline Failed'
+        }
+    }
+}
+
