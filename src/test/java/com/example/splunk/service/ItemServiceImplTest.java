@@ -27,8 +27,11 @@ class ItemServiceImplTest {
 
 	@Test
 	void create_shouldNullOutIdAndSave() {
-		Item input = Item.builder().id(999L).name("A").build();
-		when(itemRepository.save(any(Item.class))).thenAnswer(inv -> inv.getArgument(0));
+
+		Item input = new Item(999L, "A");
+
+		when(itemRepository.save(any(Item.class)))
+				.thenAnswer(inv -> inv.getArgument(0));
 
 		Item saved = itemService.create(input);
 
@@ -38,32 +41,46 @@ class ItemServiceImplTest {
 
 	@Test
 	void getById_shouldThrow404WhenMissing() {
-		when(itemRepository.findById(10L)).thenReturn(Optional.empty());
+
+		when(itemRepository.findById(10L))
+				.thenReturn(Optional.empty());
+
 		assertThatThrownBy(() -> itemService.getById(10L))
 				.isInstanceOf(ItemNotFoundException.class);
 	}
 
 	@Test
 	void update_shouldUpdateName() {
-		Item existing = Item.builder().id(1L).name("Old").build();
-		when(itemRepository.findById(1L)).thenReturn(Optional.of(existing));
-		when(itemRepository.save(any(Item.class))).thenAnswer(inv -> inv.getArgument(0));
 
-		Item updated = itemService.update(1L, Item.builder().name("New").build());
+		Item existing = new Item(1L, "Old");
+
+		when(itemRepository.findById(1L))
+				.thenReturn(Optional.of(existing));
+
+		when(itemRepository.save(any(Item.class)))
+				.thenAnswer(inv -> inv.getArgument(0));
+
+		Item updated = itemService.update(1L, new Item(null, "New"));
 
 		assertThat(updated.getId()).isEqualTo(1L);
 		assertThat(updated.getName()).isEqualTo("New");
+
 		ArgumentCaptor<Item> captor = ArgumentCaptor.forClass(Item.class);
+
 		verify(itemRepository).save(captor.capture());
+
 		assertThat(captor.getValue().getName()).isEqualTo("New");
 	}
 
 	@Test
 	void delete_shouldThrowWhenMissing() {
-		when(itemRepository.existsById(5L)).thenReturn(false);
+
+		when(itemRepository.existsById(5L))
+				.thenReturn(false);
+
 		assertThatThrownBy(() -> itemService.delete(5L))
 				.isInstanceOf(ItemNotFoundException.class);
+
 		verify(itemRepository, never()).deleteById(anyLong());
 	}
 }
-
