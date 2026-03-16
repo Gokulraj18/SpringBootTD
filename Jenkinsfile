@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "splunk-crud-app"
+        IMAGE_NAME = "SpringbootTD"
     }
 
     stages {
@@ -38,8 +38,8 @@ pipeline {
 
         stage('Stop Old Container') {
             steps {
-                sh 'docker stop splunk-app || true'
-                sh 'docker rm splunk-app || true'
+                sh 'docker stop SpringbootTD || true'
+                sh 'docker rm SpringbootTD || true'
             }
         }
 
@@ -59,10 +59,8 @@ pipeline {
             steps {
                 sh """
                 docker run -d \
-                --name splunk-app \
+                --name SpringbootTD \
                 -p 8081:8080 \
-                -e SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL \
-                -e SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD \
                 $IMAGE_NAME
                 """
             }
@@ -78,4 +76,3 @@ pipeline {
         }
     }
 }
-
