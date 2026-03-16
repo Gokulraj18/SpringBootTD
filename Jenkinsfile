@@ -8,6 +8,9 @@ pipeline {
 
     environment {
         IMAGE_NAME = "SpringbootTD"
+        SPRING_DATASOURCE_URL = "jdbc:h2:mem:splunkdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
+        SPRING_DATASOURCE_USERNAME = "sa"
+        SPRING_DATASOURCE_PASSWORD = ""
     }
 
     stages {
