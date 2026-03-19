@@ -6,8 +6,13 @@ pipeline {
         jdk 'JDK21'
     }
 
+    parameters {
+        choice(name: 'ENV', choices: ['dev', 'qa', 'prod'], description: 'Choose environment')
+    }
+
     environment {
         IMAGE_NAME = "springboot-td"
+        SPRING_PROFILES_ACTIVE = "${params.ENV}"
         SPRING_DATASOURCE_URL = "jdbc:h2:mem:splunkdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
         SPRING_DATASOURCE_USERNAME = "sa"
         SPRING_DATASOURCE_PASSWORD = ""
@@ -65,6 +70,11 @@ pipeline {
                 docker run -d \
                 --name SpringbootTD \
                 -p 8081:8080 \
+                -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE \
+                -e SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL \
+                -e SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME \
+                -e SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD \
+                -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=$SPRING_DATASOURCE_DRIVER_CLASS_NAME \
                 $IMAGE_NAME
                 """
             }
@@ -73,7 +83,7 @@ pipeline {
 
     post {
         success {
-            echo 'CI/CD Pipeline Completed Successfully'
+            echo "CI/CD Pipeline Completed Successfully with ENV = ${params.ENV}"
         }
         failure {
             echo 'Pipeline Failed'
