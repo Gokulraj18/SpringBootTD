@@ -66,17 +66,17 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                sh """
+                sh '''
                 docker run -d \
-                --name Springboot-td \
+                --name SpringbootTD \
                 -p 8081:8080 \
-                -e SPRING_PROFILES_ACTIVE=${env.SPRING_PROFILES_ACTIVE} \
-                -e SPRING_DATASOURCE_URL=${env.SPRING_DATASOURCE_URL} \
-                -e SPRING_DATASOURCE_USERNAME=${env.SPRING_DATASOURCE_USERNAME} \
-                -e SPRING_DATASOURCE_PASSWORD=${env.SPRING_DATASOURCE_PASSWORD} \
-                -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=${env.SPRING_DATASOURCE_DRIVER_CLASS_NAME} \
-                ${env.IMAGE_NAME}
-                """
+                -e SPRING_PROFILES_ACTIVE=dev \
+                -e SPRING_DATASOURCE_URL="jdbc:h2:mem:splunkdb" \
+                -e SPRING_DATASOURCE_USERNAME=sa \
+                -e SPRING_DATASOURCE_PASSWORD="" \
+                -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver \
+                springboot-td
+                '''
             }
         }
     }   
