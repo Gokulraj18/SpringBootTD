@@ -70,16 +70,15 @@ pipeline {
                 docker run -d \
                 --name SpringbootTD \
                 -p 8081:8080 \
-                -e SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE \
-                -e SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL \
-                -e SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME \
-                -e SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD \
-                -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=$SPRING_DATASOURCE_DRIVER_CLASS_NAME \
+                -e SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE} \
+                -e SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL} \
+                -e SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME} \
+                -e SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD} \
+                -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=${SPRING_DATASOURCE_DRIVER_CLASS_NAME} \
                 $IMAGE_NAME
                 """
             }
         }
-    }
 
     post {
         success {
