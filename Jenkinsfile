@@ -68,7 +68,7 @@ pipeline {
             steps {
                 sh """
                 docker run -d \
-                --name Springboot_td \
+                --name Springboot-td \
                 -p 8081:8080 \
                 -e SPRING_PROFILES_ACTIVE=${env.SPRING_PROFILES_ACTIVE} \
                 -e SPRING_DATASOURCE_URL=${env.SPRING_DATASOURCE_URL} \
